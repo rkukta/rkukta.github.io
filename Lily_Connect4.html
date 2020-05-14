@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lily's Connect 4</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background-color: rgb(231, 17, 178);
+      overflow-x: hidden;
+      height: 100%;
+    }
+
+
+
+    body {
+      min-height: 90%;
+      margin: 0;
+    }
+
+    h1 {
+      margin-top: 1.875vh;
+      margin-bottom: 3.125vh;
+      text-align: center;
+      font-size: 7.5vh;
+      color: cyan;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      text-shadow: 0.5vh 0.375vh purple;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 6.25vh;
+      color: cyan;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      text-shadow: 0.5vh 0.375vh purple;
+      margin-top: 2.5vh;
+      margin-bottom: 0vh;
+    }
+
+
+    #board {
+      width: 71vh;
+      margin: auto;
+      margin-top: -1vh;
+      padding: 1vh;
+      background-repeat: no-repeat;
+    }
+
+    div.svg-container {
+      position: absolute;
+      z-index: 3;
+      width: 71vh;
+      margin-top: -0.5vh;
+      margin-left: -0.5vh;
+      pointer-events: none;
+      touch-action: none;
+    }
+
+    #choice {
+      width: 30vh;
+      margin: auto;
+    }
+
+    div.row {
+      display: flex;
+      width: 70vh;
+      height: 10vh;
+    }
+
+    div.box {
+      width: 10vh;
+      height: 10vh;
+      border: 0.625vh solid purple;
+      border-radius: 5vh;
+    }
+
+    div.box.open.pointer-hover::after {
+      content: "";
+      position: absolute;
+      margin: 0;
+      margin-top: -0.125vh;
+      padding-top: 0;
+      background-color: rgb(231, 17, 178);
+      width: 8.75vh;
+      height: 8.75vh;
+      border-radius: 4.375vh;
+      opacity: 0.7;
+    }
+
+    div.box.e1,
+    div#board.e1,
+    div.box.e1turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70' width='70'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='40'>🐶</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770%27%20width%3D%2770%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%F0%9F%90%B6%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.e2,
+    div#board.e2,
+    div.box.e2turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70px' width='70px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='40'>🦄</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770px%27%20width%3D%2770px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%F0%9F%A6%84%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.e3,
+    div#board.e3,
+    div.box.e3turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70px' width='70px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='40'>🐱</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770px%27%20width%3D%2770px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%F0%9F%90%B1%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.e4,
+    div#board.e4,
+    div.box.e4turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70px' width='70px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='40'>🤪</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770px%27%20width%3D%2770px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%F0%9F%A4%AA%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.e5,
+    div#board.e5,
+    div.box.e5turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70px' width='70px'><text x='50%' dy='65%' text-anchor='middle' fill='black' font-size='40'>💩‍</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770px%27%20width%3D%2770px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2765%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%F0%9F%92%A9%E2%80%8D%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.e6,
+    div#board.e6,
+    div.box.e6turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70px' width='70px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='40'>😎‍</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770px%27%20width%3D%2770px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%F0%9F%98%8E%E2%80%8D%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.e7,
+    div#board.e7,
+    div.box.e7turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70px' width='70px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='40'>🦜‍</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770px%27%20width%3D%2770px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%F0%9F%A6%9C%E2%80%8D%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.e8,
+    div#board.e8,
+    div.box.e8turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70px' width='70px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='40'>‍🦁</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770px%27%20width%3D%2770px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%E2%80%8D%F0%9F%A6%81%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.e9,
+    div#board.e9,
+    div.box.e9turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70px' width='70px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='40'>🐼‍</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770px%27%20width%3D%2770px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%F0%9F%90%BC%E2%80%8D%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.e10,
+    div#board.e10,
+    div.box.e10turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70px' width='70px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='40'>🦋‍</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770px%27%20width%3D%2770px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%F0%9F%A6%8B%E2%80%8D%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.e11,
+    div#board.e11,
+    div.box.e11turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70px' width='70px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='40'>🐞</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770px%27%20width%3D%2770px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%F0%9F%90%9E%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.e12,
+    div#board.e12,
+    div.box.e12turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='70px' width='70px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='40'>‍🐸</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%2770px%27%20width%3D%2770px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2740%27%3E%E2%80%8D%F0%9F%90%B8%3C%2Ftext%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-size: 8.75vh 8.75vh;
+    }
+
+    div.box.win,
+    div.box.choose.pointer-hover {
+      background-color: cyan;
+    }
+
+    div.box.chosen {
+      background-color: purple;
+    }
+
+    #message {
+      display: block;
+      text-align: center
+    }
+
+    #play {
+      font-size: 3.75vh;
+      font-weight: bold;
+      border-radius: 1.25vh;
+      background-color: cyan;
+      border: 0.5vh solid purple;
+      padding: 0.625vh;
+      width: 22.5vh;
+      margin-top: 2.5vh;
+      margin-left: auto;
+      margin-right: auto;
+      justify-content: center;
+      user-select: none;
+    }
+
+    #play:hover {
+      margin-top: 1.875vh;
+      box-shadow: 0.625vh 0.625vh purple;
+    }
+
+    .spin {
+      transform: rotateZ(720deg);
+      transition-duration: 0.8s;
+    }
+
+    .jumpy {
+      animation-name: jumpy;
+      animation-duration: 0.6s;
+    }
+
+    @keyframes jumpy {
+      0% {
+        transform: scale(0.5);
+        margin-top: -18.75vh;
+      }
+
+      50% {
+        transform: scale(1.2);
+        margin-top: 2.5vh;
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .seeme {
+      animation-name: seeme;
+      animation-duration: 0.4s;
+    }
+
+    @keyframes seeme {
+      50% {
+        transform: scale(1.2)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .fade {
+      animation-name: fade;
+      animation-duration: 0.8s;
+    }
+
+    @keyframes fade {
+      0% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+
+    #title-screen {
+      display: block;
+      position: absolute;
+      z-index: 1;
+      left: 0.5vh;
+      top: 23.125vh;
+      height: 40vh;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    @media (max-aspect-ratio: 5/6) {
+      h1 {
+        margin-top: 2.25vw;
+        margin-bottom: 3.75vw;
+        font-size: 9vw;
+        text-shadow: 0.6vw 0.45vw purple;
+      }
+
+      h2 {
+        font-size: 7.5vw;
+        text-shadow: 0.6vw 0.45vw purple;
+        margin-top: 3vw;
+        margin-bottom: 0vw;
+      }
+
+      #board {
+        width: 85.2vw;
+        margin-top: -1.2vw;
+        padding: 1.2vw;
+      }
+
+      div.svg-container {
+        width: 85.2vw;
+        margin-top: -0.6vw;
+        margin-left: -0.6vw;
+      }
+
+      #choice {
+        width: 36vw;
+      }
+
+      div.row {
+        width: 84vw;
+        height: 12vw;
+      }
+
+      div.box {
+        width: 12vw;
+        height: 12vw;
+        border: 0.75vw solid purple;
+        border-radius: 6vw;
+      }
+
+      div.box.open.pointer-hover::after {
+        margin-top: -0.15vw;
+        width: 10.5vw;
+        height: 10.5vw;
+        border-radius: 5.25vw;
+      }
+
+      div.box.e1,
+      div.box.e2,
+      div.box.e3,
+      div.box.e4,
+      div.box.e5,
+      div.box.e6,
+      div.box.e7,
+      div.box.e8,
+      div.box.e9,
+      div.box.e10,
+      div.box.e11,
+      div.box.e12,
+      div#board.e1,
+      div#board.e2,
+      div#board.e3,
+      div#board.e4,
+      div#board.e5,
+      div#board.e6,
+      div#board.e7,
+      div#board.e8,
+      div#board.e9,
+      div#board.e10,
+      div#board.e11,
+      div#board.e12,
+      div.box.e1turn.pointer-hover,
+      div.box.e2turn.pointer-hover,
+      div.box.e3turn.pointer-hover,
+      div.box.e4turn.pointer-hover,
+      div.box.e5turn.pointer-hover,
+      div.box.e6turn.pointer-hover,
+      div.box.e7turn.pointer-hover,
+      div.box.e8turn.pointer-hover,
+      div.box.e9turn.pointer-hover,
+      div.box.e10turn.pointer-hover,
+      div.box.e11turn.pointer-hover,
+      div.box.e12turn.pointer-hover {
+        background-size: 10.5vw 10.5vw;
+      }
+
+      #play {
+        font-size: 4.5vw;
+        border-radius: 1.5vw;
+        border: 0.6vw solid purple;
+        padding: 0.75vw;
+        width: 27vw;
+        margin-top: 3vw;
+      }
+
+      #play:hover {
+        margin-top: 2.25vw;
+        box-shadow: 0.75vw 0.75vw purple;
+      }
+
+      @keyframes jumpy {
+        0% {
+          transform: scale(0.5);
+          margin-top: -22.5vw;
+        }
+
+        50% {
+          transform: scale(1.2);
+          margin-top: 3vw;
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      #title-screen {
+        left: 0.6vw;
+        top: 27.75vw;
+        height: 48vw;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Game -->
+  <h1>Lily's Connect 4</h1>
+  <div id="board" class="">
+    <div class="svg-container">
+      <svg viewbox="0 0 568 488" width="100%">
+        <defs>
+          <mask id="mask" x="0" y="0" width="568" height="488">
+            <rect x="0" y="0" width="568" height="488" fill="#FFF" />
+            <circle cx="44" cy="44" r="35" />
+            <circle cx="124" cy="44" r="35" />
+            <circle cx="204" cy="44" r="35" />
+            <circle cx="284" cy="44" r="35" />
+            <circle cx="364" cy="44" r="35" />
+            <circle cx="444" cy="44" r="35" />
+            <circle cx="524" cy="44" r="35" />
+            <circle cx="44" cy="124" r="35" />
+            <circle cx="124" cy="124" r="35" />
+            <circle cx="204" cy="124" r="35" />
+            <circle cx="284" cy="124" r="35" />
+            <circle cx="364" cy="124" r="35" />
+            <circle cx="444" cy="124" r="35" />
+            <circle cx="524" cy="124" r="35" />
+            <circle cx="44" cy="204" r="35" />
+            <circle cx="124" cy="204" r="35" />
+            <circle cx="204" cy="204" r="35" />
+            <circle cx="284" cy="204" r="35" />
+            <circle cx="364" cy="204" r="35" />
+            <circle cx="444" cy="204" r="35" />
+            <circle cx="524" cy="204" r="35" />
+            <circle cx="44" cy="284" r="35" />
+            <circle cx="124" cy="284" r="35" />
+            <circle cx="204" cy="284" r="35" />
+            <circle cx="284" cy="284" r="35" />
+            <circle cx="364" cy="284" r="35" />
+            <circle cx="444" cy="284" r="35" />
+            <circle cx="524" cy="284" r="35" />
+            <circle cx="44" cy="364" r="35" />
+            <circle cx="124" cy="364" r="35" />
+            <circle cx="204" cy="364" r="35" />
+            <circle cx="284" cy="364" r="35" />
+            <circle cx="364" cy="364" r="35" />
+            <circle cx="444" cy="364" r="35" />
+            <circle cx="524" cy="364" r="35" />
+            <circle cx="44" cy="444" r="35" />
+            <circle cx="124" cy="444" r="35" />
+            <circle cx="204" cy="444" r="35" />
+            <circle cx="284" cy="444" r="35" />
+            <circle cx="364" cy="444" r="35" />
+            <circle cx="444" cy="444" r="35" />
+            <circle cx="524" cy="444" r="35" />
+          </mask>
+        </defs>
+        <rect x="0" y="0" width="568" height="488" mask="url(#mask)" fill-opacity="1" fill='#800080' />
+      </svg>
+    </div>
+    <div class="row">
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+    </div>
+    <div class="row">
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+    </div>
+    <div class="row">
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+    </div>
+    <div class="row">
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+    </div>
+    <div class="row">
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+    </div>
+    <div class="row">
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+    </div>
+  </div>
+  <div id="message">
+    <h2>Message</h2>
+    <button id="play">Let's Play</button>
+  </div>
+  <!-- Start Screen -->
+  <div id="title-screen">
+    <div id="choice">
+      <div class="row">
+        <div class="box e1 choose" data-emoji="e1" data-name="Puppy"></div>
+        <div class="box e2 choose" data-emoji="e2" data-name="Unicorn"></div>
+        <div class="box e3 choose" data-emoji="e3" data-name="Kitty"></div>
+      </div>
+      <div class="row">
+        <div class="box e4 choose" data-emoji="e4" data-name="Silly Face"></div>
+        <div class="box e5 choose" data-emoji="e5" data-name="Poo"></div>
+        <div class="box e6 choose" data-emoji="e6" data-name="Shades"></div>
+      </div>
+      <div class="row">
+        <div class="box e7 choose" data-emoji="e7" data-name="Birdy"></div>
+        <div class="box e8 choose" data-emoji="e8" data-name="Lion"></div>
+        <div class="box e9 choose" data-emoji="e9" data-name="Panda"></div>
+      </div>
+      <div class="row">
+        <div class="box e10 choose" data-emoji="e10" data-name="Butterfly"></div>
+        <div class="box e11 choose" data-emoji="e11" data-name="Ladybug"></div>
+        <div class="box e12 choose" data-emoji="e12" data-name="Frog"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let animationrunning = false
+    let turn, turns, players = {}, touchbox = null
+    let board = document.querySelector("#board")
+    let title_screen = document.querySelector("#title-screen")
+    let emojis = document.querySelector("#choice")
+    let message = document.querySelector("#message")
+    let play = document.querySelector("#play")
+    let messagetext = document.querySelector("#message h2")
+    let boxes = board.getElementsByClassName("box")
+    let choices = emojis.getElementsByClassName("choose")
+    const winmessages = ["Bam What!!", "OMG!!", "Oh Yea!!", "What the what??", "Chicken dinner!!", "Party time!!", "Cha-ching $$", "Sup dog?", "Floss it out!!", "Lily says..."]
+    let winmessagesleft = winmessages.slice()
+    let column = []
+    for (let i = 0; i < 7; i++) {
+      column[i] = board.querySelectorAll("div.box:nth-child(" + (i + 1) + ")")
+    }
+    start()
+
+    function start() {
+      play.style.display = "none"
+      messagetext.innerHTML = "Player 1: Pick your emoji."
+      message.style.display = "block"
+      messagetext.style.display = "block"
+      emojis.addEventListener("touchstart", pointemoji)
+      emojis.addEventListener("touchmove", pointemoji)
+      emojis.addEventListener('pointermove', pointemoji)
+      emojis.addEventListener("touchend", selectemoji)
+      emojis.addEventListener("pointerup", selectemoji)
+      play.addEventListener("click", letsplay)
+      play.addEventListener("touchend", letsplay)
+      board.addEventListener("touchstart", pointemoji)
+      board.addEventListener("touchmove", pointemoji)
+      board.addEventListener('pointermove', pointemoji)
+      board.addEventListener("touchend", selectturn)
+      board.addEventListener("pointerup", selectturn)
+    }
+    function pointemoji(e) {
+      if (e.pointerType == "touch") return
+      let obj
+      e.touches ? obj = e.touches[0] : obj = e
+      let box = document.elementFromPoint(obj.clientX, obj.clientY)
+      if (box != touchbox) {
+        if (touchbox) touchbox.classList.remove("pointer-hover")
+        touchbox = box
+        touchbox.classList.add("pointer-hover")
+      }
+    }
+    function selectemoji(e) {
+      if (e.pointerType == "touch") return
+      if (touchbox.classList.contains("box")) setplayer(touchbox)
+    }
+    function pointboard(e) {
+      if (e.pointerType == "touch") return
+      let obj
+      e.touches ? obj = e.touches[0] : obj = e
+      let box = document.elementFromPoint(obj.clientX, obj.clientY)
+      if (box != touchbox) {
+        if (touchbox) touchbox.classList.remove("pointer-hover")
+        touchbox = box
+        touchbox.classList.add("pointer-hover")
+      }
+    }
+    function setplayer(box) {
+      if (box.classList.contains("choose")) {
+        box.classList.remove("choose")
+        box.classList.add("chosen")
+        if (!players.x) {
+          players.x = box.dataset.emoji
+          players.xname = box.dataset.name
+          messagetext.innerHTML = "Player 2: Pick your emoji."
+        } else {
+          let eboxes = emojis.getElementsByClassName("box")
+          for (let box of eboxes) {
+            box.classList.remove("choose")
+          };
+          players.o = box.dataset.emoji
+          players.oname = box.dataset.name
+          messagetext.innerHTML = players.xname + " vs " + players.oname
+          setTimeout(() => {
+            play.style.display = "block"
+            play.classList.add("seeme")
+          }, 400);
+        }
+      }
+    }
+    function letsplay() {
+      play.removeEventListener("click", letsplay)
+      play.removeEventListener("touchend", letsplay)
+      setTimeout(() => {
+        title_screen.style.display = "none"
+        title_screen.classList.remove("fade")
+      }, 700);
+      title_screen.classList.add("fade")
+      play.addEventListener("click", playagain)
+      play.addEventListener("touchend", playagain)
+      turn = 'x'
+      playagain()
+      play.innerHTML = "Play Again"
+    }
+    function playagain() {
+      turns = 0
+      board.classList.remove("spin")
+      messagetext.classList.remove("jumpy")
+      play.classList.remove("seeme")
+      message.style.display = "none"
+      messagetext.style.display = "none"
+      play.style.display = "none"
+      for (let box of boxes) {
+        box.classList.remove(players.x, players.o, "win", "pointer-hover")
+        box.classList.add(players[turn] + "turn", "open")
+      };
+    }
+    function selectturn(e) {
+      if (e.pointerType == "touch") return
+      if (touchbox.classList.contains("box")) taketurn(touchbox)
+    }
+    function dropfrom(box) {
+      animationrunning = true
+      let vhscale = document.documentElement.clientHeight / 800
+      if (document.documentElement.clientHeight / document.documentElement.clientWidth > 1.2) {
+        vhscale = document.documentElement.clientWidth / 800 * 1.2
+      }
+      let who = turn
+      let time0
+      let x = box.offsetLeft - board.offsetLeft + 5 * vhscale
+      let y = box.offsetTop - board.offsetTop + 5 * vhscale
+      let ipos = Math.floor(y / 80 / vhscale)
+      board.style["background-position"] = x + 'px 0px'
+      board.classList.add(players[who])
+      let cellx = Math.floor(x / 80 / vhscale)
+      let col = column[cellx]
+      let destination = box
+      for (let i = ipos + 1; i < 6; i++) {
+        if (col[i].classList.contains('open')) {
+          destination = col[i]
+        } else {
+          break
+        }
+      }
+      let y_end = destination.offsetTop - board.offsetTop + 5
+      let celly = Math.floor(y_end / 80 / vhscale)
+      let duration = celly / 6 * 1000
+      if (who == 'x') {
+        turn = 'o'
+      } else {
+        turn = 'x'
+      }
+      destination.classList.remove(players[who] + "turn", "open")
+      for (let box of boxes) {
+        if (box.classList.contains('open')) {
+          box.classList.remove(players[who] + "turn")
+          box.classList.add(players[turn] + "turn")
+        }
+      };
+      let animation = (time) => {
+        if (!time0) {
+          time0 = time
+        }
+        let dt = (time - time0) / duration
+        if (dt <= 1) {
+          board.style["background-position"] = x + 'px ' + (y_end * dt) + 'px'
+          requestAnimationFrame(animation)
+        } else {
+          destination.classList.add(players[who])
+          board.classList.remove(players[who])
+          animationrunning = false
+          isWinner(who, cellx, celly)
+        }
+      }
+      requestAnimationFrame(animation)
+    }
+    function taketurn(box) {
+      if (!box.classList.contains('open') || animationrunning) return
+      turns += 1
+      dropfrom(box)
+    }
+    function checkcell(cellx, celly, who) {
+      if (cellx < 0 || celly < 0 || cellx > 6 || celly > 5) return false
+      if (cellbox(cellx, celly).classList.contains(players[who])) return true
+      return false
+    }
+    function cellbox(cellx, celly) {
+      let col = board.querySelectorAll("div.box:nth-child(" + (cellx + 1) + ")")
+      return col[celly]
+    }
+    function isWinner(who, cellx, celly) {
+      let row, spot
+      for (let i = 0; i < 4; i++) {
+        if (checkcell(cellx - 3 + i, celly, who) && checkcell(cellx - 2 + i, celly, who) && checkcell(cellx - 1 + i, celly, who) && checkcell(cellx + i, celly, who)) {
+          winner(who, [cellbox(cellx - 3 + i, celly), cellbox(cellx - 2 + i, celly), cellbox(cellx - 1 + i, celly), cellbox(cellx + i, celly)])
+          return
+          break
+        }
+        if (checkcell(cellx, celly - 3 + i, who) && checkcell(cellx, celly - 2 + i, who) && checkcell(cellx, celly - 1 + i, who) && checkcell(cellx, celly + i, who)) {
+          winner(who, [cellbox(cellx, celly - 3 + i), cellbox(cellx, celly - 2 + i), cellbox(cellx, celly - 1 + i), cellbox(cellx, celly + i)])
+          return
+          break
+        }
+        if (checkcell(cellx - 3 + i, celly - 3 + i, who) && checkcell(cellx - 2 + i, celly - 2 + i, who) && checkcell(cellx - 1 + i, celly - 1 + i, who) && checkcell(cellx + i, celly + i, who)) {
+          winner(who, [cellbox(cellx - 3 + i, celly - 3 + i), cellbox(cellx - 2 + i, celly - 2 + i), cellbox(cellx - 1 + i, celly - 1 + i), cellbox(cellx + i, celly + i)])
+          return
+          break
+        }
+        if (checkcell(cellx - 3 + i, celly + 3 - i, who) && checkcell(cellx - 2 + i, celly + 2 - i, who) && checkcell(cellx - 1 + i, celly + 1 - i, who) && checkcell(cellx + i, celly - i, who)) {
+          winner(who, [cellbox(cellx - 3 + i, celly + 3 - i), cellbox(cellx - 2 + i, celly + 2 - i), cellbox(cellx - 1 + i, celly + 1 - i), cellbox(cellx + i, celly - i)])
+          return
+          break
+        }
+      }
+      if (turns == 42) {
+        messagetext.innerHTML = "It is a tie."
+        message.style.display = "block"
+        messagetext.style.display = "block"
+        messagetext.classList.add("jumpy")
+        setTimeout(() => {
+          play.style.display = "block"
+          play.classList.add("seeme")
+        }, 600);
+      }
+      return
+    }
+
+    function winner(who, set) {
+      let name = players[who + "name"]
+      if (!winmessagesleft.length) winmessagesleft = winmessages.slice()
+      let pick = Math.floor(Math.random() * winmessagesleft.length)
+      messagetext.innerHTML = winmessagesleft[pick] + " " + name + " Wins!!"
+      winmessagesleft.splice(pick, 1);
+      for (let box of boxes) {
+        box.classList.remove("open")
+        box.classList.remove(players[turn] + "turn")
+      };
+      for (let box of set) {
+        box.classList.add("win")
+      }
+      message.style.display = "block"
+      board.classList.add("spin")
+      setTimeout(() => {
+        messagetext.style.display = "block"
+        messagetext.classList.add("jumpy")
+        setTimeout(() => {
+          play.style.display = "block"
+          play.classList.add("seeme")
+        }, 600);
+      }, 800);
+    }
+  </script>
+</body>
+
+</html>

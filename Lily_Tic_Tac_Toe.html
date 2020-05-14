@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lily's Tic-Tac-Toe</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background-color: rgb(231, 17, 178);
+      overflow-x: hidden;
+      height: 100%;
+    }
+
+    body {
+      min-height: 90%;
+      margin: 0;
+    }
+
+    h1 {
+      margin-top: 15px;
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 60px;
+      color: cyan;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      text-shadow: 4px 3px purple;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 50px;
+      color: cyan;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      text-shadow: 4px 3px purple;
+      margin-top: 20px;
+      margin-bottom: 0px;
+    }
+
+    #board,
+    #choice {
+      width: 300px;
+      margin: auto;
+      margin-top: 0px;
+    }
+
+    div.row {
+      display: flex;
+      width: 300px;
+      height: 100px;
+    }
+
+    div.box {
+      width: 100px;
+      height: 100px;
+      border: 5px solid purple;
+    }
+
+    div.box.top {
+      border-top: none;
+    }
+
+    div.box.bottom {
+      border-bottom: none;
+    }
+
+    div.box:nth-child(1) {
+      border-left: none;
+    }
+
+    div.box:nth-child(3) {
+      border-right: none;
+    }
+
+    div.box.open.pointer-hover::after {
+      content: "";
+      position: absolute;
+      margin: 0;
+      margin-top: -1px;
+      padding-top: 0;
+      background-color: rgb(231, 17, 178);
+      width: 91px;
+      height: 91px;
+      opacity: 0.7;
+    }
+
+    div.box.e1,
+    div.box.e1turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='100px' width='95px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='70'>🐶</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%27100px%27%20width%3D%2795px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2770%27%3E%F0%9F%90%B6%3C%2Ftext%3E%3C%2Fsvg%3E");
+    }
+
+    div.box.e2,
+    div.box.e2turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='100px' width='95px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='70'>🦄</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%27100px%27%20width%3D%2795px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2770%27%3E%F0%9F%A6%84%3C%2Ftext%3E%3C%2Fsvg%3E");
+    }
+
+    div.box.e3,
+    div.box.e3turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='100px' width='95px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='70'>🐱</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%27100px%27%20width%3D%2795px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2770%27%3E%F0%9F%90%B1%3C%2Ftext%3E%3C%2Fsvg%3E");
+    }
+
+    div.box.e4,
+    div.box.e4turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='100px' width='95px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='70'>🤪</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%27100px%27%20width%3D%2795px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2770%27%3E%F0%9F%A4%AA%3C%2Ftext%3E%3C%2Fsvg%3E");
+    }
+
+    div.box.e5,
+    div.box.e5turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='100px' width='95px'><text x='50%' dy='65%' text-anchor='middle' fill='black' font-size='70'>💩‍</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%27100px%27%20width%3D%2795px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2765%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2770%27%3E%F0%9F%92%A9%E2%80%8D%3C%2Ftext%3E%3C%2Fsvg%3E");
+    }
+
+    div.box.e6,
+    div.box.e6turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='100px' width='95px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='70'>😎‍</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%27100px%27%20width%3D%2795px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2770%27%3E%F0%9F%98%8E%E2%80%8D%3C%2Ftext%3E%3C%2Fsvg%3E");
+    }
+
+    div.box.e7,
+    div.box.e7turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='100px' width='95px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='70'>🦜‍</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%27100px%27%20width%3D%2795px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2770%27%3E%F0%9F%A6%9C%E2%80%8D%3C%2Ftext%3E%3C%2Fsvg%3E");
+    }
+
+    div.box.e8,
+    div.box.e8turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='100px' width='95px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='70'>‍🦁</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%27100px%27%20width%3D%2795px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2770%27%3E%E2%80%8D%F0%9F%A6%81%3C%2Ftext%3E%3C%2Fsvg%3E");
+    }
+
+    div.box.e9,
+    div.box.e9turn.pointer-hover {
+      /* background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' font-family='sans-serif' height='100px' width='95px'><text x='50%' dy='70%' text-anchor='middle' fill='black' font-size='70'>🐼‍</text></svg>"); */
+      background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20font-family%3D%27sans-serif%27%20height%3D%27100px%27%20width%3D%2795px%27%3E%3Ctext%20x%3D%2750%25%27%20dy%3D%2770%25%27%20text-anchor%3D%27middle%27%20fill%3D%27black%27%20font-size%3D%2770%27%3E%F0%9F%90%BC%E2%80%8D%3C%2Ftext%3E%3C%2Fsvg%3E");
+    }
+
+    div.box.win,
+    div.box.choose.pointer-hover {
+      background-color: cyan;
+    }
+
+    div.box.chosen {
+      background-color: purple;
+    }
+
+    #message {
+      display: block;
+      text-align: center
+    }
+
+    #play {
+      font-size: 30px;
+      font-weight: bold;
+      border-radius: 10px;
+      background-color: cyan;
+      border: 4px solid purple;
+      padding: 5px;
+      width: 180px;
+      margin-top: 20px;
+      margin-left: auto;
+      margin-right: auto;
+      justify-content: center;
+      user-select: none;
+    }
+
+    #play:hover {
+      margin-top: 15px;
+      box-shadow: 5px 5px purple;
+    }
+
+    .spin {
+      transform: rotateZ(720deg);
+      transition-duration: 0.8s;
+    }
+
+    .jumpy {
+      animation-name: jumpy;
+      animation-duration: 0.6s;
+    }
+
+    @keyframes jumpy {
+      0% {
+        transform: scale(0.5);
+        margin-top: -150px;
+      }
+
+      50% {
+        transform: scale(1.2);
+        margin-top: 20px;
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .seeme {
+      animation-name: seeme;
+      animation-duration: 0.4s;
+    }
+
+    @keyframes seeme {
+      50% {
+        transform: scale(1.2)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .fade {
+      animation-name: fade;
+      animation-duration: 0.8s;
+    }
+
+    @keyframes fade {
+      0% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+
+    #title-screen {
+      display: block;
+      position: absolute;
+      z-index: 1;
+      left: 0;
+      top: 109px;
+      height: 310px;
+      width: 100%;
+      overflow-x: hidden;
+      background-color: rgb(231, 17, 178);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Game -->
+  <h1>Lily's Tic-Tac-Toe</h1>
+  <div id="board">
+    <div class="row">
+      <div class="box top"></div>
+      <div class="box top"></div>
+      <div class="box top"></div>
+    </div>
+    <div class="row">
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+    </div>
+    <div class="row">
+      <div class="box bottom"></div>
+      <div class="box bottom"></div>
+      <div class="box bottom"></div>
+    </div>
+  </div>
+  <div id="message">
+    <h2>Message</h2>
+    <button id="play">Let's Play</button>
+  </div>
+  <!-- Start Screen -->
+  <div id="title-screen">
+    <div id="choice">
+      <div class="row">
+        <div class="box top e1 choose" data-emoji="e1" data-name="Puppy"></div>
+        <div class="box top e2 choose" data-emoji="e2" data-name="Unicorn"></div>
+        <div class="box top e3 choose" data-emoji="e3" data-name="Kitty"></div>
+      </div>
+      <div class="row">
+        <div class="box e4 choose" data-emoji="e4" data-name="Silly Face"></div>
+        <div class="box e5 choose" data-emoji="e5" data-name="Poo"></div>
+        <div class="box e6 choose" data-emoji="e6" data-name="Shades"></div>
+      </div>
+      <div class="row">
+        <div class="box bottom e7 choose" data-emoji="e7" data-name="Birdy"></div>
+        <div class="box bottom e8 choose" data-emoji="e8" data-name="Lion"></div>
+        <div class="box bottom e9 choose" data-emoji="e9" data-name="Panda"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let turn, turns, players = {}, touchbox = null
+    let board = document.querySelector("#board")
+    let title_screen = document.querySelector("#title-screen")
+    let emojis = document.querySelector("#choice")
+    let message = document.querySelector("#message")
+    let play = document.querySelector("#play")
+    let messagetext = document.querySelector("#message h2")
+    let boxes = board.getElementsByClassName("box")
+    let choices = emojis.getElementsByClassName("choose")
+    const winmessages = ["Bam What!!", "OMG!!", "Oh Yea!!", "What the what??", "Chicken dinner!!", "Party time!!", "Cha-ching $$", "Sup dog?", "Floss it out!!", "Lily says..."]
+    let winmessagesleft = winmessages.slice()
+    settitleposition()
+    start()
+
+    function settitleposition() {
+      title_screen.style.top = board.offsetTop + "px"
+    }
+    function start() {
+      window.addEventListener("resize", settitleposition)
+      play.style.display = "none"
+      messagetext.innerHTML = "Player 1: Pick your emoji."
+      message.style.display = "block"
+      messagetext.style.display = "block"
+      emojis.addEventListener("touchstart", pointemoji)
+      emojis.addEventListener("touchmove", pointemoji)
+      emojis.addEventListener('pointermove', pointemoji)
+      emojis.addEventListener("touchend", selectemoji)
+      emojis.addEventListener("pointerup", selectemoji)
+      play.addEventListener("click", letsplay)
+      play.addEventListener("touchend", letsplay)
+      board.addEventListener("touchstart", pointemoji)
+      board.addEventListener("touchmove", pointemoji)
+      board.addEventListener('pointermove', pointemoji)
+      board.addEventListener("touchend", selectturn)
+      board.addEventListener("pointerup", selectturn)
+    }
+    function pointemoji(e) {
+      if (e.pointerType == "touch") return
+      let obj
+      e.touches ? obj = e.touches[0] : obj = e
+      let box = document.elementFromPoint(obj.clientX, obj.clientY)
+      if (box != touchbox) {
+        if (touchbox) touchbox.classList.remove("pointer-hover")
+        touchbox = box
+        touchbox.classList.add("pointer-hover")
+      }
+    }
+    function selectemoji(e) {
+      if (e.pointerType == "touch") return
+      if (touchbox.classList.contains("box")) setplayer(touchbox)
+    }
+    function pointboard(e) {
+      if (e.pointerType == "touch") return
+      let obj
+      e.touches ? obj = e.touches[0] : obj = e
+      let box = document.elementFromPoint(obj.clientX, obj.clientY)
+      if (box != touchbox) {
+        if (touchbox) touchbox.classList.remove("pointer-hover")
+        touchbox = box
+        touchbox.classList.add("pointer-hover")
+      }
+    }
+    function setplayer(box) {
+      if (box.classList.contains("choose")) {
+        box.classList.remove("choose")
+        box.classList.add("chosen")
+        if (!players.x) {
+          players.x = box.dataset.emoji
+          players.xname = box.dataset.name
+          messagetext.innerHTML = "Player 2: Pick your emoji."
+        } else {
+          let eboxes = emojis.getElementsByClassName("box")
+          for (let box of eboxes) {
+            box.classList.remove("choose")
+          };
+          players.o = box.dataset.emoji
+          players.oname = box.dataset.name
+          messagetext.innerHTML = players.xname + " vs " + players.oname
+          setTimeout(() => {
+            play.style.display = "block"
+            play.classList.add("seeme")
+          }, 400);
+        }
+      }
+    }
+    function letsplay() {
+      play.removeEventListener("click", letsplay)
+      play.removeEventListener("touchend", letsplay)
+      setTimeout(() => {
+        title_screen.style.display = "none"
+        title_screen.classList.remove("fade")
+      }, 700);
+      title_screen.classList.add("fade")
+      play.addEventListener("click", playagain)
+      play.addEventListener("touchend", playagain)
+      turn = 'x'
+      playagain()
+      play.innerHTML = "Play Again"
+    }
+    function playagain() {
+      turns = 0
+      board.classList.remove("spin")
+      messagetext.classList.remove("jumpy")
+      play.classList.remove("seeme")
+      message.style.display = "none"
+      messagetext.style.display = "none"
+      play.style.display = "none"
+      for (let box of boxes) {
+        box.classList.remove(players.x, players.o, "win", "pointer-hover")
+        box.classList.add(players[turn] + "turn", "open")
+      };
+    }
+    function selectturn(e) {
+      if (e.pointerType == "touch") return
+      if (touchbox.classList.contains("box")) taketurn(touchbox)
+    }
+    function taketurn(box) {
+      if (!box.classList.contains('open')) return
+      turns += 1
+      let thisturn = turn
+      box.classList.remove(players[thisturn] + "turn", "open", "pointer-hover")
+      box.classList.add(players[turn])
+      if (thisturn == 'x') {
+        turn = 'o'
+      } else {
+        turn = 'x'
+      }
+      for (let box of boxes) {
+        if (box.classList.contains('open')) {
+          box.classList.remove(players[thisturn] + "turn")
+          box.classList.add(players[turn] + "turn")
+        }
+      };
+      isWinner(thisturn)
+    }
+
+    function isWinner(who) {
+      let set, boxes, row, col
+      for (let i = 1; i < 4; i++) {
+        row = board.querySelector("div.row:nth-child(" + i + ")")
+        boxes = row.children
+        set = []
+        for (let box of boxes) {
+          if (!box.classList.contains(players[who])) break
+          set.push(box)
+        };
+        if (set.length == 3) {
+          winner(who, set)
+          return
+        }
+      }
+      for (let i = 1; i < 4; i++) {
+        col = board.querySelectorAll("div.box:nth-child(" + i + ")")
+        set = []
+        for (let box of col) {
+          if (!box.classList.contains(players[who])) break
+          set.push(box)
+        };
+        if (set.length == 3) {
+          winner(who, set)
+          return
+        }
+      }
+      set = []
+      for (let i = 1; i < 4; i++) {
+        row = board.querySelector("div.row:nth-child(" + i + ")")
+        box = row.querySelector("div.box:nth-child(" + i + ")")
+        if (!box.classList.contains(players[who])) break
+        set.push(box)
+      }
+      if (set.length == 3) {
+        winner(who, set)
+        return
+      }
+      set = []
+      for (let i = 1; i < 4; i++) {
+        row = board.querySelector("div.row:nth-child(" + (4 - i) + ")")
+        box = row.querySelector("div.box:nth-child(" + i + ")")
+        if (!box.classList.contains(players[who])) break
+        set.push(box)
+      }
+      if (set.length == 3) {
+        winner(who, set)
+        return
+      }
+      if (turns == 9) {
+        messagetext.innerHTML = "It is a tie."
+        message.style.display = "block"
+        messagetext.style.display = "block"
+        messagetext.classList.add("jumpy")
+        setTimeout(() => {
+          play.style.display = "block"
+          play.classList.add("seeme")
+        }, 600);
+      }
+    }
+
+    function winner(who, set) {
+      let name = players[who + "name"]
+      if (!winmessagesleft.length) winmessagesleft = winmessages.slice()
+      let pick = Math.floor(Math.random() * winmessagesleft.length)
+      messagetext.innerHTML = winmessagesleft[pick] + " " + name + " Wins!!"
+      winmessagesleft.splice(pick, 1);
+      for (let box of boxes) {
+        box.classList.remove("open")
+        box.classList.remove(players[turn] + "turn")
+      };
+      for (let box of set) {
+        box.classList.add("win")
+      }
+      message.style.display = "block"
+      board.classList.add("spin")
+      setTimeout(() => {
+        messagetext.style.display = "block"
+        messagetext.classList.add("jumpy")
+        setTimeout(() => {
+          play.style.display = "block"
+          play.classList.add("seeme")
+        }, 600);
+      }, 800);
+    }
+  </script>
+</body>
+
+</html>
